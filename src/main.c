@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include "task.h"
 #include "scheduler.h"
+#include "systick.h"
 
 task_t task_A;
 task_t task_B;
@@ -20,7 +21,6 @@ void task_A_function(void) {
     counter++;
     if (counter == 0x400U) {
       counter = 0U;
-      scheduler_yield();
     }
   }
 }
@@ -30,7 +30,6 @@ void task_B_function(void) {
     pow = pow * 2U;
     if (pow > 0x1000U) {
       pow = 1U;
-      scheduler_yield();
     }
   }
 }
@@ -41,6 +40,7 @@ int main(void) {
   task_B.sp = task_stack_init(task_B_stack + 256, task_B_function);
   
   scheduler_init(&task_A, &task_B);
+  systick_init();
   scheduler_start();
 
   while(1);

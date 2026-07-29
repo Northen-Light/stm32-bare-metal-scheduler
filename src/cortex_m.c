@@ -9,7 +9,7 @@ void cortex_m_start_first_task(void) {
 }
 
 void cortex_m_set_pending_task_switch(void) {
-  SCB_ICSR |= (1U << 28U);
+  SCB_ICSR_REG |= (1U << 28U);
 }
 
 __attribute((naked))
