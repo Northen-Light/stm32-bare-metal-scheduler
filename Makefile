@@ -26,7 +26,10 @@ LDFLAGS = \
 
 SRCS = \
 	startup/startup.c \
-	app/main.c
+	src/main.c	\
+	src/scheduler.c	\
+	src/task.c	\
+	src/cortex_m.c	\
 
 OBJS = $(SRCS:.c=.o)
 
