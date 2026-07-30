@@ -7,9 +7,9 @@
 
 #define TASK_STACK_WORDS                256U
 
-task_t task_A;
-task_t task_B;
-task_t task_C;
+tcb_t task_A;
+tcb_t task_B;
+tcb_t task_C;
 
 __attribute__((aligned(8U)))
 uint32_t task_A_stack[TASK_STACK_WORDS];
@@ -52,13 +52,18 @@ void task_C_function(void) {
 }
 int main(void) {
   task_A.sp = task_stack_init(task_A_stack + TASK_STACK_WORDS, task_A_function);
+  task_A.task_state = TASK_READY;
+
   task_B.sp = task_stack_init(task_B_stack + TASK_STACK_WORDS, task_B_function);
+  task_B.task_state = TASK_READY;
+
   task_C.sp = task_stack_init(task_C_stack + TASK_STACK_WORDS, task_C_function);
+  task_C.task_state = TASK_READY;
 
   scheduler_init(&task_A, &task_B, &task_C);
   cortex_m_exception_priority_init();
   systick_init();
-  scheduler_start();
+  cortex_m_start_first_task();
 
   while(1);
   return 0;

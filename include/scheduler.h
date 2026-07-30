@@ -3,8 +3,8 @@
 
 #include "task.h"
 
-void scheduler_init(task_t *first, task_t *second, task_t *third);
+void scheduler_init(tcb_t *first, tcb_t *second, tcb_t *third);
 void scheduler_start(void);
-void scheduler_yield(void);
+void scheduler_schedule_next(void);
 
 #endif

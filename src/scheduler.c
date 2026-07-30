@@ -2,27 +2,25 @@
 #include "task.h"
 #include "cortex_m.h"
 
-static task_t *tasks[3];
+static tcb_t *tasks[3];
 static uint8_t count = 0;
-task_t *current_task;
-task_t *next_task;
+tcb_t *current_task;
 
-void scheduler_init(task_t *first, task_t *second, task_t *third) {
+void scheduler_init(tcb_t *first, tcb_t *second, tcb_t *third) {
   tasks[0] = first;
   tasks[1] = second;
   tasks[2] = third;
   
   current_task = tasks[0];
-  next_task = tasks[0];
 }
 
 void scheduler_start(void) {
-  cortex_m_start_first_task();
+  current_task -> task_state = TASK_RUNNING;
 }
 
-void scheduler_yield(void) {
-  current_task = next_task;
+void scheduler_schedule_next(void) {
+  current_task -> task_state = TASK_READY;
   count = (uint8_t)((count + 1) % 3);
-  next_task = tasks[count];
-  cortex_m_set_pending_task_switch();
+  current_task = tasks[count];
+  current_task -> task_state = TASK_RUNNING;
 }

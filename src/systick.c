@@ -1,5 +1,6 @@
 #include "systick.h"
 #include "scheduler.h"
+#include "cortex_m.h"
 
 void systick_init(void) {
   SYST_CSR_REG = 0U;
@@ -10,5 +11,5 @@ void systick_init(void) {
 }
 
 void SysTick_Handler(void) {
-  scheduler_yield();
+  cortex_m_set_pending_task_switch();
 }
