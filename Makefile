@@ -40,7 +40,7 @@ all: main.bin
 	$(CC) $(CFLAGS) -c $< -o $@
 
 main.elf: $(OBJS)
-	$(CC) $(LDFLAGS) $(OBJS) -lgcc -o $@
+	$(CC) $(LDFLAGS) $(OBJS) -o $@
 
 main.bin: main.elf
 	$(OBJCOPY) -O binary $< $@
