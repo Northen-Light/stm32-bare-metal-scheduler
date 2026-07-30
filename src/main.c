@@ -3,22 +3,25 @@
 #include "task.h"
 #include "scheduler.h"
 #include "systick.h"
+#include "cortex_m.h"
+
+#define TASK_STACK_WORDS                256U
 
 task_t task_A;
 task_t task_B;
 task_t task_C;
 
 __attribute__((aligned(8U)))
-uint32_t task_A_stack[256U];
+uint32_t task_A_stack[TASK_STACK_WORDS];
 
 __attribute__((aligned(8U)))
-uint32_t task_B_stack[256U];
+uint32_t task_B_stack[TASK_STACK_WORDS];
 
 __attribute__((aligned(8U)))
-uint32_t task_C_stack[256U];
+uint32_t task_C_stack[TASK_STACK_WORDS];
 
 uint32_t counter = 0U;
-uint32_t pow = 1U;
+uint32_t power = 1U;
 uint32_t sum = 0U; 
 
 void task_A_function(void) {
@@ -32,9 +35,9 @@ void task_A_function(void) {
 
 void task_B_function(void) {
   while (1) {
-    pow = pow * 2U;
-    if (pow > 0x1000U) {
-      pow = 1U;
+    power = power * 2U;
+    if (power > 0x1000U) {
+      power = 1U;
     }
   }
 }
@@ -47,13 +50,13 @@ void task_C_function(void) {
     sum = 0U;
   }
 }
-
 int main(void) {
-  task_A.sp = task_stack_init(task_A_stack + 256, task_A_function);
-  task_B.sp = task_stack_init(task_B_stack + 256, task_B_function);
-  task_C.sp = task_stack_init(task_C_stack + 256, task_C_function);
+  task_A.sp = task_stack_init(task_A_stack + TASK_STACK_WORDS, task_A_function);
+  task_B.sp = task_stack_init(task_B_stack + TASK_STACK_WORDS, task_B_function);
+  task_C.sp = task_stack_init(task_C_stack + TASK_STACK_WORDS, task_C_function);
 
   scheduler_init(&task_A, &task_B, &task_C);
+  cortex_m_exception_priority_init();
   systick_init();
   scheduler_start();
 

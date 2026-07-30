@@ -7,10 +7,10 @@ extern uint32_t _edata;
 extern uint32_t _sbss;
 extern uint32_t _ebss;
 
-extern void main(void);
+extern int main(void);
 extern void SVC_Handler(void);
 extern void PendSV_Handler(void);
-extern void Systick_Handler(void);
+extern void SysTick_Handler(void);
 
 void Reset_Handler(void);
 void HardFault_Handler(void);
@@ -32,7 +32,7 @@ const uintptr_t vector_table[] = {
   0U,
   0U,
   (uintptr_t) PendSV_Handler,
-  (uintptr_t) Systick_Handler,
+  (uintptr_t) SysTick_Handler,
 };
 
 void Reset_Handler(void) {
@@ -51,7 +51,7 @@ void Reset_Handler(void) {
     *start_bss_sram++ = 0;
   }
 
-  main();
+  (void)main();
   while (1);
 }
 
