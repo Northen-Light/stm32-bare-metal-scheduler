@@ -18,8 +18,6 @@ void cortex_m_exception_priority_init(void) {
 __attribute((naked))
 void SVC_Handler(void) {
   __asm volatile(
-    "bl scheduler_start           \n"
-    "                             \n"
     "ldr r3, =current_task        \n"
     "ldr r2, [r3]                 \n"
     "ldr r0, [r2]                 \n"

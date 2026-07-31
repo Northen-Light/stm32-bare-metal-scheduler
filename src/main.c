@@ -1,8 +1,6 @@
 #include <stdint.h>
 #include "task.h"
 #include "scheduler.h"
-#include "systick.h"
-#include "cortex_m.h"
 
 #define TASK_STACK_WORDS                256U
 
@@ -60,9 +58,7 @@ int main(void) {
   task_C.task_state = TASK_READY;
 
   scheduler_init(&task_A, &task_B, &task_C);
-  cortex_m_exception_priority_init();
-  systick_init();
-  cortex_m_start_first_task();
+  scheduler_start();
 
   while(1);
   return 0;
