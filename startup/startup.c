@@ -7,13 +7,12 @@ extern uint32_t _edata;
 extern uint32_t _sbss;
 extern uint32_t _ebss;
 
-extern int main(void);
-extern void SVC_Handler(void);
-extern void PendSV_Handler(void);
-extern void SysTick_Handler(void);
-
 void Reset_Handler(void);
 void HardFault_Handler(void);
+void SVC_Handler(void);
+void PendSV_Handler(void);
+void SysTick_Handler(void);
+int main(void);
 
 __attribute__((used, section(".isr_vector")))
 const uintptr_t vector_table[] = {
