@@ -8,7 +8,7 @@ task_t *tasks;
 task_t *current_task;
 uint32_t tasks_length;
 
-static uint8_t count = 0;
+static uint32_t count = 0;
 
 void scheduler_init(task_t *__tasks__, uint32_t __tasks_length__) {
   tasks = __tasks__;
@@ -43,9 +43,9 @@ void scheduler_next(void) {
   if (current_task -> state == TASK_RUNNING) {
     current_task -> state = TASK_READY;
   }
-  count = (uint8_t)((count + 1U) % tasks_length);
+  count = (count + 1U) % tasks_length;
   while (tasks[count].state != TASK_READY) {
-    count = (uint8_t)((count + 1U) % tasks_length);
+    count = (count + 1U) % tasks_length;
   }
   current_task = &tasks[count];
   current_task -> state = TASK_RUNNING;
