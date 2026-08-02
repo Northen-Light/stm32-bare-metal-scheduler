@@ -13,9 +13,11 @@ typedef enum {
 
 typedef struct {
   uint32_t *sp;
-  task_state_t task_state;
-} tcb_t;
+  task_state_t state;
+  uint32_t delay_ticks;
+} task_t;
 
-uint32_t *task_stack_init(uint32_t *stack_top, task_function_t task_function);
+void task_create(task_t *task, uint32_t *stack_top, task_function_t task_function);
+void task_delay(task_t *task, uint32_t ticks);
 
 #endif

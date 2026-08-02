@@ -1,7 +1,7 @@
 #include "cortex_m.h"
 #include "task.h"
 
-extern tcb_t *current_task;
+extern task_t *current_task;
 
 void cortex_m_start_first_task(void) {
   __asm volatile("svc #0");
@@ -41,7 +41,7 @@ void PendSV_Handler(void) {
     "stmdb sp!, {r3, r14}         \n"
     "mov r0, %0                   \n"
     "msr basepri, r0              \n"
-    "bl scheduler_schedule_next   \n"
+    "bl scheduler_next            \n"
     "mov r0, #0                   \n"
     "msr basepri, r0              \n"
     "ldmia sp!, {r3, r14}         \n"

@@ -2,11 +2,10 @@
 #include "task.h"
 #include "scheduler.h"
 
+#define TASKS_LENGTH                    3U                         
 #define TASK_STACK_WORDS                256U
 
-tcb_t task_A;
-tcb_t task_B;
-tcb_t task_C;
+task_t __tasks__[TASKS_LENGTH];
 
 __attribute__((aligned(8U)))
 uint32_t task_A_stack[TASK_STACK_WORDS];
@@ -24,7 +23,10 @@ uint32_t sum = 0U;
 void task_A_function(void) {
   while(1) {
     counter++;
-    if (counter == 0x400U) {
+    if (counter == 256U) {
+      task_delay(&__tasks__[0], 5000U);
+    }
+    if (counter == 1024U) {
       counter = 0U;
     }
   }
@@ -33,7 +35,7 @@ void task_A_function(void) {
 void task_B_function(void) {
   while (1) {
     power = power * 2U;
-    if (power > 0x1000U) {
+    if (power > 4096U) {
       power = 1U;
     }
   }
@@ -43,21 +45,19 @@ void task_C_function(void) {
   while (1) {
     for (uint32_t i = 0U; i < 1000U; i++) {
       sum += i;
+      if (i == 500U) {
+        task_delay(&__tasks__[2], 2000U);
+      }
     }
     sum = 0U;
   }
 }
 int main(void) {
-  task_A.sp = task_stack_init(task_A_stack + TASK_STACK_WORDS, task_A_function);
-  task_A.task_state = TASK_READY;
+  task_create(&__tasks__[0], task_A_stack + TASK_STACK_WORDS, task_A_function);
+  task_create(&__tasks__[1], task_B_stack + TASK_STACK_WORDS, task_B_function);
+  task_create(&__tasks__[2], task_C_stack + TASK_STACK_WORDS, task_C_function);
 
-  task_B.sp = task_stack_init(task_B_stack + TASK_STACK_WORDS, task_B_function);
-  task_B.task_state = TASK_READY;
-
-  task_C.sp = task_stack_init(task_C_stack + TASK_STACK_WORDS, task_C_function);
-  task_C.task_state = TASK_READY;
-
-  scheduler_init(&task_A, &task_B, &task_C);
+  scheduler_init(&__tasks__[0], TASKS_LENGTH);
   scheduler_start();
 
   while(1);

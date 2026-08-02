@@ -30,7 +30,8 @@ SRCS = \
 	src/scheduler.c	\
 	src/task.c	\
 	src/cortex_m.c	\
-	src/systick.c
+	src/systick.c	\
+	src/gpio.c
 
 OBJS = $(SRCS:.c=.o)
 

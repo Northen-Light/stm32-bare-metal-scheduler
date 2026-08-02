@@ -1,9 +1,22 @@
 #include "task.h"
 #include "cortex_m.h"
+#include "scheduler.h"
 
 static void task_exit_error(void);
+static uint32_t *task_stack_init(uint32_t *stack_top, task_function_t task_function);
 
-uint32_t *task_stack_init(uint32_t *stack_top, task_function_t task_function) {
+void task_create(task_t *task, uint32_t *stack_top, task_function_t task_function) {
+  task -> sp = task_stack_init(stack_top, task_function);
+  task -> state = TASK_READY;
+};
+
+void task_delay(task_t *task, uint32_t ticks) {
+  task -> state = TASK_BLOCKED;
+  task -> delay_ticks = ticks;
+  scheduler_yield();
+}
+
+static uint32_t *task_stack_init(uint32_t *stack_top, task_function_t task_function) {
   uint32_t *sp = stack_top;
   *(--sp) = INITIAL_XPSR;                   // XPSR
   *(--sp) = (uint32_t) task_function;       // PC
@@ -25,7 +38,6 @@ uint32_t *task_stack_init(uint32_t *stack_top, task_function_t task_function) {
 
   return sp;
 }
-
 static void task_exit_error(void) {
   while(1);
 }
