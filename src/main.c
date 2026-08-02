@@ -37,6 +37,7 @@ void task_B_function(void) {
     power = power * 2U;
     if (power > 4096U) {
       power = 1U;
+      task_delay(&__tasks__[1], 5000U);
     }
   }
 }
