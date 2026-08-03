@@ -1,4 +1,4 @@
-#include <stdbool.h>
+#include <stdint.h>
 #include "scheduler.h"
 #include "task.h"
 #include "systick.h"
