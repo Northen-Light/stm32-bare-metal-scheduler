@@ -3,8 +3,6 @@
 
 #include "task.h"
 
-#define MAX_TASKS                       10U
-
 void scheduler_start(void);
 void scheduler_yield(void);
 void scheduler_tick(void);
