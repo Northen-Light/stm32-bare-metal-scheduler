@@ -43,7 +43,6 @@ void scheduler_tick(void) {
       if (tcb_table[i] -> delay_ticks == 0U) {
         tcb_table[i] -> state = TASK_READY;
       }
-
       if (tcb_table[i] -> state == TASK_READY) {
         has_ready_tcb = true;
       }
@@ -66,7 +65,7 @@ void scheduler_select_next(void) {
   if (current_tcb -> state == TASK_RUNNING) {
     current_tcb -> state = TASK_READY;
   }
-  
+
   tcb_index = (tcb_index + 1U) % tcb_count;
   while (tcb_table[tcb_index] -> state != TASK_READY) {
     tcb_index = (tcb_index + 1U) % tcb_count;
