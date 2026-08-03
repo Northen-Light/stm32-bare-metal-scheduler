@@ -1,19 +1,25 @@
 #include "task.h"
 #include "cortex_m.h"
 #include "scheduler.h"
+#include "scheduler_internal.h"
 
 static void task_exit_error(void);
 static uint32_t *task_stack_init(uint32_t *stack_top, task_function_t task_function);
 
-void task_create(task_t *task, uint32_t *stack_top, task_function_t task_function) {
-  task -> sp = task_stack_init(stack_top, task_function);
-  task -> state = TASK_READY;
+void task_create(tcb_t *tcb, uint32_t *stack_top, task_function_t task_function) {
+  tcb -> sp = task_stack_init(stack_top, task_function);
+  tcb -> state = TASK_READY;
+  scheduler_add_tcb(tcb);
 };
 
-void task_delay(task_t *task, uint32_t ticks) {
-  task -> state = TASK_BLOCKED;
-  task -> delay_ticks = ticks;
+void task_yield(void) {
   scheduler_yield();
+}
+
+void task_delay(uint32_t ticks) {
+  current_tcb -> state = TASK_BLOCKED;
+  current_tcb -> delay_ticks = ticks;
+  task_yield();
 }
 
 static uint32_t *task_stack_init(uint32_t *stack_top, task_function_t task_function) {

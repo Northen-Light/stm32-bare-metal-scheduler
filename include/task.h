@@ -15,9 +15,9 @@ typedef struct {
   uint32_t *sp;
   task_state_t state;
   uint32_t delay_ticks;
-} task_t;
+} tcb_t;
 
-void task_create(task_t *task, uint32_t *stack_top, task_function_t task_function);
-void task_delay(task_t *task, uint32_t ticks);
+void task_create(tcb_t *task, uint32_t *stack_top, task_function_t task_function);
+void task_delay(uint32_t ticks);
 
 #endif

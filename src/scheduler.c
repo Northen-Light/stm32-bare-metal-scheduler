@@ -4,49 +4,51 @@
 #include "systick.h"
 #include "cortex_m.h"
 
-task_t *tasks;
-task_t *current_task;
-uint32_t tasks_length;
+tcb_t *current_tcb;
 
-static uint32_t count = 0;
-
-void scheduler_init(task_t *__tasks__, uint32_t __tasks_length__) {
-  tasks = __tasks__;
-  tasks_length = __tasks_length__;
-}
+static tcb_t *tcb_table[MAX_TASKS];
+static uint32_t tcb_index = 0;
+static uint32_t tcb_count = 0;
 
 void scheduler_start(void) {
-  current_task = &tasks[0];
-  current_task -> state = TASK_RUNNING;
+  current_tcb = tcb_table[0];
+  current_tcb -> state = TASK_RUNNING;
   cortex_m_exception_priority_init();
   systick_init();
   cortex_m_start_first_task();
 }
 
 void scheduler_yield(void) {
-  cortex_m_set_pending_task_switch();
+  cortex_m_request_context_switch();
 }
 
 void scheduler_tick(void) {
-  for (uint8_t i = 0; i < tasks_length; i++) {
-    if (tasks[i].state == TASK_BLOCKED) {
-      (tasks[i].delay_ticks)--;
-      if (tasks[i].delay_ticks == 0U) {
-        tasks[i].state = TASK_READY;
+  for (uint8_t i = 0; i < tcb_count; i++) {
+    if (tcb_table[i] -> state == TASK_BLOCKED) {
+      (tcb_table[i] -> delay_ticks)--;
+      if (tcb_table[i] -> delay_ticks == 0U) {
+        tcb_table[i] -> state = TASK_READY;
       }
     }
   }
   scheduler_yield();
 }
 
-void scheduler_next(void) {
-  if (current_task -> state == TASK_RUNNING) {
-    current_task -> state = TASK_READY;
+void scheduler_add_tcb(tcb_t *tcb) {
+  if (tcb_count >= MAX_TASKS) {
+    return;
   }
-  count = (count + 1U) % tasks_length;
-  while (tasks[count].state != TASK_READY) {
-    count = (count + 1U) % tasks_length;
+  tcb_table[tcb_count++] = tcb;
+}
+
+void scheduler_select_next(void) {
+  if (current_tcb -> state == TASK_RUNNING) {
+    current_tcb -> state = TASK_READY;
   }
-  current_task = &tasks[count];
-  current_task -> state = TASK_RUNNING;
+  tcb_index = (tcb_index + 1U) % tcb_count;
+  while (tcb_table[tcb_index] -> state != TASK_READY) {
+    tcb_index = (tcb_index + 1U) % tcb_count;
+  }
+  current_tcb = tcb_table[tcb_index];
+  current_tcb -> state = TASK_RUNNING;
 }

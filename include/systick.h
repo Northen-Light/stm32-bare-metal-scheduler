@@ -9,7 +9,7 @@
 
 #define SYST_CSR_ENABLE_BIT            (1U << 0U)
 #define SYST_CSR_TICKINT_BIT           (1U << 1U)
-#define SYST_CSR_CLKSOURCE_BIT         (1U << 1U)
+#define SYST_CSR_CLKSOURCE_BIT         (1U << 2U)
 
 void systick_init(void);
 
