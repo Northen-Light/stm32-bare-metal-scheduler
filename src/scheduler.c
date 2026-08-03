@@ -11,7 +11,7 @@
 tcb_t *current_tcb;
 
 static tcb_t *tcb_table[MAX_TASKS];
-static uint32_t tcb_index = 0;
+static uint8_t tcb_index = 0;
 static uint8_t tcb_count = 0;
 
 static tcb_t tcb_idle;
@@ -66,9 +66,9 @@ void scheduler_select_next(void) {
     current_tcb -> state = TASK_READY;
   }
 
-  tcb_index = (tcb_index + 1U) % tcb_count;
+  tcb_index = (uint8_t)(tcb_index + 1) % tcb_count;
   while (tcb_table[tcb_index] -> state != TASK_READY) {
-    tcb_index = (tcb_index + 1U) % tcb_count;
+    tcb_index = (uint8_t)(tcb_index + 1) % tcb_count;
   }
   current_tcb = tcb_table[tcb_index];
   current_tcb -> state = TASK_RUNNING;
