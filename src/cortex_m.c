@@ -1,6 +1,6 @@
 #include "cortex_m.h"
 #include "task.h"
-#define USE_INTERNAL_SCHEDULER_SELECT_NEXT 
+#define USE_INTERNAL_SCHEDULER_SELECT_NEXT_TASK
 #include "scheduler_internal.h"
 
 void cortex_m_start_first_task(void) {
@@ -34,14 +34,14 @@ void PendSV_Handler(void) {
   __asm volatile(
     "mrs r0, psp                  \n"
     "stmdb r0!, {r4-r11}          \n"
-    "ldr r3, =current_tcb        \n"
+    "ldr r3, =current_tcb         \n"
     "ldr r2, [r3]                 \n"
     "str r0, [r2]                 \n"
     "                             \n"
     "stmdb sp!, {r3, r14}         \n"
     "mov r0, %0                   \n"
     "msr basepri, r0              \n"
-    "bl scheduler_select_next            \n"
+    "bl scheduler_select_next_task\n"
     "mov r0, #0                   \n"
     "msr basepri, r0              \n"
     "ldmia sp!, {r3, r14}         \n"

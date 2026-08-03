@@ -10,6 +10,7 @@
 
 tcb_t *current_tcb;
 
+__attribute__((aligned(8)))
 static tcb_t *tcb_table[MAX_TASKS];
 static uint8_t tcb_index = 0;
 static uint8_t tcb_count = 0;
@@ -21,7 +22,11 @@ static void idle_task_function(void);
 
 void scheduler_start(void) {
   scheduler_create_idle_task();
-  tcb_index++;
+
+  if (tcb_table[tcb_index] == &tcb_idle) {
+    tcb_index++;
+  }
+  
   current_tcb = tcb_table[tcb_index];
   current_tcb -> state = TASK_RUNNING;
   cortex_m_exception_priority_init();
@@ -36,46 +41,61 @@ void scheduler_yield(void) {
 void scheduler_tick(void) {
   bool has_ready_tcb = false;
 
-  for (uint8_t i = 1; i < tcb_count; i++) {
-    if (tcb_table[i] -> state == TASK_BLOCKED) {
+  for (uint8_t i = 0; i < tcb_count; i++) {
+    tcb_t *tcb = tcb_table[i];
 
-      (tcb_table[i] -> delay_ticks)--;
-      if (tcb_table[i] -> delay_ticks == 0U) {
-        tcb_table[i] -> state = TASK_READY;
-      }
-      if (tcb_table[i] -> state == TASK_READY) {
-        has_ready_tcb = true;
+    if (tcb == &tcb_idle) {
+      continue;
+    }
+    if (tcb -> state == TASK_BLOCKED) {
+      (tcb -> delay_ticks)--;
+      if (tcb -> delay_ticks == 0U) {
+        tcb -> state = TASK_READY;
       }
     }
+    if (tcb -> state == TASK_READY) {
+      has_ready_tcb = true;
+    }
   }
-
   if (has_ready_tcb) {
     scheduler_yield();
   }
 }
 
 void scheduler_add_tcb(tcb_t *tcb) {
-  if (tcb_count >= MAX_TASKS) {
-    return;
-  }
+  if (tcb_count >= MAX_TASKS) return;
   tcb_table[tcb_count++] = tcb;
 }
 
-void scheduler_select_next(void) {
+void scheduler_select_next_task(void) {
+  uint8_t runs = 0;
+  tcb_t *tcb;
+
   if (current_tcb -> state == TASK_RUNNING) {
     current_tcb -> state = TASK_READY;
   }
 
-  tcb_index = (uint8_t)(tcb_index + 1) % tcb_count;
-  while (tcb_table[tcb_index] -> state != TASK_READY) {
+  tcb_index = (uint8_t)(tcb_index + 1) % tcb_count; 
+
+  while(1) {
+    tcb = tcb_table[tcb_index]; 
+    runs++;
+    if (runs == tcb_count)  {
+      tcb = &tcb_idle;
+      break;
+    } 
+    if ((tcb != &tcb_idle) && tcb -> state == TASK_READY) {
+      break;
+    }
     tcb_index = (uint8_t)(tcb_index + 1) % tcb_count;
   }
-  current_tcb = tcb_table[tcb_index];
+
+  current_tcb = tcb;
   current_tcb -> state = TASK_RUNNING;
 }
 
 static void scheduler_create_idle_task(void) {
-  task_create(&tcb_idle, task_idle_stack + 64U, idle_task_function);
+  task_create(&tcb_idle, task_idle_stack + IDLE_STACK_WORDS, idle_task_function);
 }
 
 static void idle_task_function(void) {
