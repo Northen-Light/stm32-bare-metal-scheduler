@@ -5,7 +5,7 @@
 extern tcb_t *current_tcb;
 
 #ifdef USE_INTERNAL_SCHEDULER_SELECT_NEXT_TASK
-void scheduler_select_next(void);
+void scheduler_select_next_task(void);
 #endif
 
 #endif
