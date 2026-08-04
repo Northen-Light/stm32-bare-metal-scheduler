@@ -18,7 +18,7 @@ void cortex_m_exception_priority_init(void) {
 __attribute((naked))
 void SVC_Handler(void) {
   __asm volatile(
-    "ldr r3, =current_tcb        \n"
+    "ldr r3, =current_tcb         \n"
     "ldr r2, [r3]                 \n"
     "ldr r0, [r2]                 \n"
     "ldmia r0!, {r4-r11}          \n"
