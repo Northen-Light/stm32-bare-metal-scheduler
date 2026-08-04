@@ -24,6 +24,7 @@ void task_delay(uint32_t ticks) {
 
 static uint32_t *task_stack_init(uint32_t *stack_top, task_function_t task_function) {
   uint32_t *sp = stack_top;
+
   *(--sp) = INITIAL_XPSR;                   // XPSR
   *(--sp) = (uint32_t) task_function;       // PC
   *(--sp) = (uint32_t) task_exit_error;     // LR
@@ -32,7 +33,6 @@ static uint32_t *task_stack_init(uint32_t *stack_top, task_function_t task_funct
   *(--sp) = 0;                              // R2
   *(--sp) = 0;                              // R1
   *(--sp) = 0;                              // R0
-
   *(--sp) = 0;                              // R11
   *(--sp) = 0;                              // R10
   *(--sp) = 0;                              // R9
@@ -45,5 +45,5 @@ static uint32_t *task_stack_init(uint32_t *stack_top, task_function_t task_funct
   return sp;
 }
 static void task_exit_error(void) {
-  while(1);
+  while(1) {}
 }

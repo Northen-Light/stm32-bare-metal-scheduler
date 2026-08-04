@@ -47,23 +47,30 @@ void scheduler_tick(void) {
     if (tcb == &tcb_idle) {
       continue;
     }
+
     if (tcb -> state == TASK_BLOCKED) {
       (tcb -> delay_ticks)--;
+
       if (tcb -> delay_ticks == 0U) {
         tcb -> state = TASK_READY;
       }
     }
+
     if (tcb -> state == TASK_READY) {
       has_ready_tcb = true;
     }
   }
+
   if (has_ready_tcb) {
     scheduler_yield();
   }
 }
 
 void scheduler_add_tcb(tcb_t *tcb) {
-  if (tcb_count >= MAX_TASKS) return;
+  if (tcb_count >= MAX_TASKS) {
+    return;
+  }
+  
   tcb_table[tcb_count++] = tcb;
 }
 
@@ -80,13 +87,16 @@ void scheduler_select_next_task(void) {
   while(1) {
     tcb = tcb_table[tcb_index]; 
     runs++;
+
     if (runs == tcb_count)  {
       tcb = &tcb_idle;
       break;
     } 
-    if ((tcb != &tcb_idle) && tcb -> state == TASK_READY) {
+
+    if ((tcb != &tcb_idle) && (tcb -> state == TASK_READY)) {
       break;
     }
+
     tcb_index = (uint8_t)(tcb_index + 1) % tcb_count;
   }
 

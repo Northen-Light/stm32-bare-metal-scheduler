@@ -24,9 +24,11 @@ uint32_t sum = 0U;
 void task_A_function(void) {
   while(1) {
     counter++;
+
     if (counter == 256U) {
       task_delay(5000U);
     }
+
     if (counter == 1024U) {
       counter = 0U;
     }
@@ -36,6 +38,7 @@ void task_A_function(void) {
 void task_B_function(void) {
   while (1) {
     power = power * 2U;
+
     if (power > 4096U) {
       power = 1U;
       task_delay(5000U);
@@ -47,6 +50,7 @@ void task_C_function(void) {
   while (1) {
     for (uint32_t i = 0U; i < 1000U; i++) {
       sum += i;
+
       if (i == 500U) {
         task_delay(2000U);
       }
@@ -54,13 +58,11 @@ void task_C_function(void) {
     sum = 0U;
   }
 }
-int main(void) {
+void main(void) {
   task_create(&task_A, task_A_stack + TASK_STACK_WORDS, task_A_function);
   task_create(&task_B, task_B_stack + TASK_STACK_WORDS, task_B_function);
   task_create(&task_C, task_C_stack + TASK_STACK_WORDS, task_C_function);
-
   scheduler_start();
 
-  while(1);
-  return 0;
+  while(1) {}
 }

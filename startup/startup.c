@@ -12,7 +12,7 @@ void HardFault_Handler(void);
 void SVC_Handler(void);
 void PendSV_Handler(void);
 void SysTick_Handler(void);
-int main(void);
+void main(void);
 
 __attribute__((used, section(".isr_vector")))
 const uintptr_t vector_table[] = {
@@ -50,10 +50,11 @@ void Reset_Handler(void) {
     *start_bss_sram++ = 0;
   }
 
-  (void)main();
-  while (1);
+  main();
+
+  while (1) {}
 }
 
 void HardFault_Handler(void) {
-  while (1);
+  while (1) {}
 }
