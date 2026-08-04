@@ -2,7 +2,7 @@
 #include "task.h"
 #include "scheduler.h"
               
-#define TASK_STACK_WORDS                256U
+#define TASK_STACK_WORDS                32U
 
 tcb_t task_A;
 tcb_t task_B;

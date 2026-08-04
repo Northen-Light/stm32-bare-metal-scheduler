@@ -49,7 +49,9 @@ void scheduler_tick(void) {
     }
 
     if (tcb -> state == TASK_BLOCKED) {
-      (tcb -> delay_ticks)--;
+      if (tcb -> delay_ticks > 0U) {
+        tcb -> delay_ticks--;
+      }
 
       if (tcb -> delay_ticks == 0U) {
         tcb -> state = TASK_READY;
@@ -75,7 +77,7 @@ void scheduler_add_tcb(tcb_t *tcb) {
 }
 
 void scheduler_select_next_task(void) {
-  uint8_t runs = 0;
+  uint8_t visited_tcbs = 0;
   tcb_t *tcb;
 
   if (current_tcb -> state == TASK_RUNNING) {
@@ -84,20 +86,20 @@ void scheduler_select_next_task(void) {
 
   tcb_index = (uint8_t)(tcb_index + 1) % tcb_count; 
 
-  while(1) {
-    tcb = tcb_table[tcb_index]; 
-    runs++;
-
-    if (runs == tcb_count)  {
+  for(;;) {
+    if (visited_tcbs == tcb_count)  { 
       tcb = &tcb_idle;
       break;
     } 
+
+    tcb = tcb_table[tcb_index]; 
 
     if ((tcb != &tcb_idle) && (tcb -> state == TASK_READY)) {
       break;
     }
 
     tcb_index = (uint8_t)(tcb_index + 1) % tcb_count;
+    visited_tcbs++;
   }
 
   current_tcb = tcb;
