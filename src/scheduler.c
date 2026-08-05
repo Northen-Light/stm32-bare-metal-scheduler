@@ -10,24 +10,21 @@
 
 tcb_t *current_tcb;
 
-__attribute__((aligned(8)))
 static tcb_t *tcb_table[MAX_TASKS];
-static uint8_t tcb_index = 0;
 static uint8_t tcb_count = 0;
-
+static uint8_t current_tcb_index = 0;
 static tcb_t tcb_idle;
+
+__attribute__((aligned(8)))
 static uint32_t task_idle_stack[IDLE_STACK_WORDS];
+
+static tcb_t *scheduler_select_next_round_robin();
 static void scheduler_create_idle_task(void);
 static void idle_task_function(void);
 
 void scheduler_start(void) {
   scheduler_create_idle_task();
-
-  if (tcb_table[tcb_index] == &tcb_idle) {
-    tcb_index++;
-  }
-  
-  current_tcb = tcb_table[tcb_index];
+  current_tcb = tcb_table[current_tcb_index];
   current_tcb -> state = TASK_RUNNING;
   cortex_m_exception_priority_init();
   systick_init();
@@ -77,37 +74,41 @@ void scheduler_add_tcb(tcb_t *tcb) {
 }
 
 void scheduler_select_next_task(void) {
-  uint8_t visited_tcbs = 0;
-  tcb_t *tcb;
-
   if (current_tcb -> state == TASK_RUNNING) {
     current_tcb -> state = TASK_READY;
   }
 
-  tcb_index = (uint8_t)(tcb_index + 1) % tcb_count; 
-
-  for(;;) {
-    if (visited_tcbs == tcb_count)  { 
-      tcb = &tcb_idle;
-      break;
-    } 
-
-    tcb = tcb_table[tcb_index]; 
-
-    if ((tcb != &tcb_idle) && (tcb -> state == TASK_READY)) {
-      break;
-    }
-
-    tcb_index = (uint8_t)(tcb_index + 1) % tcb_count;
-    visited_tcbs++;
-  }
-
-  current_tcb = tcb;
+  current_tcb = scheduler_select_next_round_robin();
   current_tcb -> state = TASK_RUNNING;
 }
 
 static void scheduler_create_idle_task(void) {
   task_create(&tcb_idle, task_idle_stack + IDLE_STACK_WORDS, idle_task_function);
+}
+
+static tcb_t *scheduler_select_next_round_robin() {
+  tcb_t *selected_tcb;
+  uint8_t visited_tcbs = 0;
+
+  current_tcb_index = (uint8_t)(current_tcb_index + 1) % tcb_count; 
+
+  for(;;) {
+    if (visited_tcbs == tcb_count)  { 
+      selected_tcb = &tcb_idle;
+      break;
+    } 
+
+    selected_tcb = tcb_table[current_tcb_index]; 
+
+    if ((selected_tcb != &tcb_idle) && (selected_tcb -> state == TASK_READY)) {
+      break;
+    }
+
+    current_tcb_index = (uint8_t)(current_tcb_index + 1) % tcb_count;
+    visited_tcbs++;
+  }
+  
+  return selected_tcb;
 }
 
 static void idle_task_function(void) {
