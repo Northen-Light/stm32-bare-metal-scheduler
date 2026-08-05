@@ -248,6 +248,8 @@ This project provided practical experience with:
 
 # Build
 
+Build the firmware:
+
 ```bash
 make
 ```
