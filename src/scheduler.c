@@ -18,8 +18,8 @@ static tcb_t tcb_idle;
 __attribute__((aligned(8)))
 static uint32_t task_idle_stack[IDLE_STACK_WORDS];
 
-static tcb_t *scheduler_select_next_round_robin();
 static void scheduler_create_idle_task(void);
+static tcb_t *scheduler_select_next_round_robin();
 static void idle_task_function(void);
 
 void scheduler_start(void) {
