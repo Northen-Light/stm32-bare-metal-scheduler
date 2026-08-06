@@ -196,8 +196,6 @@ During every context switch:
 
 # Directory Structure
 
-# Directory Structure
-
 ```text
 stm32-bare-metal-rtos-kernel/
 ├── include/
