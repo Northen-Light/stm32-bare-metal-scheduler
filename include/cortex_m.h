@@ -19,7 +19,7 @@
 #define SCB_SHPR_SYSTICK_PRIORITY_VALUE         (PRIORITY_ENCODE(SCB_SHPR_SYSTICK_PRIORITY) << 24U)
 #define BASEPRI_MASK_PRIORITY_VALUE             PRIORITY_ENCODE(BASEPRI_MASK_PRIORITY)
 
-void cortex_m_start_first_task(void);
+void cortex_m_request_first_task_start(void);
 void cortex_m_request_context_switch(void);
 void cortex_m_exception_priority_init(void);
 

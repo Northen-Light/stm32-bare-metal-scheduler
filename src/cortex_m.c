@@ -2,7 +2,7 @@
 #include "task.h"
 #include "scheduler_internal.h"
 
-void cortex_m_start_first_task(void) {
+void cortex_m_request_first_task_start(void) {
   __asm volatile("svc #0");
 }
 
@@ -40,7 +40,7 @@ void PendSV_Handler(void) {
     "stmdb sp!, {r3, r14}         \n"
     "mov r0, %0                   \n"
     "msr basepri, r0              \n"
-    "bl scheduler_select_next_task\n"
+    "bl scheduler_select_next_tcb\n"
     "mov r0, #0                   \n"
     "msr basepri, r0              \n"
     "ldmia sp!, {r3, r14}         \n"

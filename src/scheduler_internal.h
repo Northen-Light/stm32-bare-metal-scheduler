@@ -4,6 +4,6 @@
 #include "task.h"
 
 extern tcb_t *current_tcb;
-void scheduler_select_next_task(void);
+void scheduler_select_next_tcb(void);
 
 #endif

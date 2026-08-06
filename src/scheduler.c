@@ -28,7 +28,7 @@ void scheduler_start(void) {
   current_tcb -> state = TASK_RUNNING;
   cortex_m_exception_priority_init();
   systick_init();
-  cortex_m_start_first_task();
+  cortex_m_request_first_task_start();
 }
 
 void scheduler_yield(void) {
@@ -73,7 +73,7 @@ void scheduler_add_tcb(tcb_t *tcb) {
   tcb_table[tcb_count++] = tcb;
 }
 
-void scheduler_select_next_task(void) {
+void scheduler_select_next_tcb(void) {
   if (current_tcb -> state == TASK_RUNNING) {
     current_tcb -> state = TASK_READY;
   }

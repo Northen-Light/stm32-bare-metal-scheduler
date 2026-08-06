@@ -97,7 +97,7 @@ PendSV Handler
    │
 Save Context
    │
-scheduler_select_next_task()
+scheduler_select_next_tcb()
    │
 Restore Context
    │
@@ -123,7 +123,7 @@ PendSV Handler
         │
 Save Context
         │
-scheduler_select_next_task()
+scheduler_select_next_tcb()
         │
 Restore Context
         │
@@ -178,7 +178,7 @@ During every context switch:
 5. Restore software-stacked registers **R4–R11**.
 6. Return to Thread Mode.
 
-Hardware automatically saves:
+Hardware automatically saves and restores:
 
 - R0–R3
 - R12
@@ -186,7 +186,7 @@ Hardware automatically saves:
 - PC
 - xPSR
 
-Software saves:
+Software saves and restores:
 
 - R4–R11
 
