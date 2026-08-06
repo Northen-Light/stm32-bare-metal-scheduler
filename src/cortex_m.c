@@ -1,6 +1,5 @@
 #include "cortex_m.h"
 #include "task.h"
-#define USE_INTERNAL_SCHEDULER_SELECT_NEXT_TASK
 #include "scheduler_internal.h"
 
 void cortex_m_start_first_task(void) {
