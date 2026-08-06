@@ -171,24 +171,14 @@ The kernel performs context switching using the **PendSV** exception.
 
 During every context switch:
 
-1. Save software-stacked registers **R4–R11**.
-2. Store the current PSP into the current TCB.
-3. Select the next READY task.
-4. Load the PSP of the selected task.
-5. Restore software-stacked registers **R4–R11**.
-6. Return to Thread Mode.
-
-Hardware automatically saves and restores:
-
-- R0–R3
-- R12
-- LR
-- PC
-- xPSR
-
-Software saves and restores:
-
-- R4–R11
+1. Hardware automatically **stacks** registers **R0–R3, R12, LR, PC, and xPSR**.
+2. Save software-stacked registers **R4–R11**.
+3. Store the current PSP in the current TCB.
+4. Select the next READY task.
+5. Load the PSP from the selected TCB.
+6. Restore software-stacked registers **R4–R11**.
+7. Hardware automatically **unstacks** registers **R0–R3, R12, LR, PC, and xPSR**.
+8. Return to Thread Mode.
 
 ---
 
