@@ -206,25 +206,36 @@ Software saves:
 
 # Directory Structure
 
-```
-include/
-├── cortex_m.h
-├── scheduler.h
-├── systick.h
-└── task.h
+# Directory Structure
 
-src/
-├── cortex_m.c
-├── scheduler.c
-├── systick.c
-└── task.c
-
-LICENSE
-README.md
-main.c
-startup.s
-linker.ld
-Makefile
+```text
+stm32-bare-metal-rtos-kernel/
+├── include/
+│   ├── cortex_m.h
+│   ├── gpio.h
+│   ├── scheduler.h
+│   ├── systick.h
+│   └── task.h
+│
+├── linker/
+│   └── main.ld
+│
+├── src/
+│   ├── cortex_m.c
+│   ├── gpio.c
+│   ├── main.c
+│   ├── scheduler.c
+│   ├── scheduler_internal.h
+│   ├── systick.c
+│   └── task.c
+│
+├── startup/
+│   └── startup.c
+│
+├── .gitignore
+├── LICENSE
+├── Makefile
+└── README.md
 ```
 
 ---

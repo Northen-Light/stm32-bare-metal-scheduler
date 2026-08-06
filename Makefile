@@ -1,6 +1,8 @@
 CC      = arm-none-eabi-gcc
 OBJCOPY = arm-none-eabi-objcopy
 
+BUILD_DIR = build
+
 CPUFLAGS = -mcpu=cortex-m3 -mthumb
 
 CFLAGS = \
@@ -14,42 +16,46 @@ CFLAGS = \
 	-Wextra \
 	-Wconversion \
 	-Wshadow \
-  -Wundef \
+	-Wundef \
 	-ffunction-sections \
 	-fdata-sections
 
 LDFLAGS = \
 	$(CPUFLAGS) \
 	-Tlinker/main.ld \
-	-Wl,-Map=main.map,--gc-sections \
+	-Wl,-Map=$(BUILD_DIR)/main.map,--gc-sections \
 	-nostdlib
 
 SRCS = \
 	startup/startup.c \
-	src/main.c	\
-	src/scheduler.c	\
-	src/task.c	\
-	src/cortex_m.c	\
-	src/systick.c	\
+	src/main.c \
+	src/scheduler.c \
+	src/task.c \
+	src/cortex_m.c \
+	src/systick.c \
 	src/gpio.c
 
-OBJS = $(SRCS:.c=.o)
+OBJS = $(SRCS:%.c=$(BUILD_DIR)/%.o)
 
-all: main.bin
+ELF = $(BUILD_DIR)/main.elf
+BIN = $(BUILD_DIR)/main.bin
 
-%.o: %.c
+all: $(BIN)
+
+$(BUILD_DIR)/%.o: %.c
+	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-main.elf: $(OBJS)
+$(ELF): $(OBJS)
 	$(CC) $(LDFLAGS) $(OBJS) -o $@
 
-main.bin: main.elf
+$(BIN): $(ELF)
 	$(OBJCOPY) -O binary $< $@
 
 clean:
-	rm -f $(OBJS) main.elf main.map main.bin
+	rm -rf $(BUILD_DIR)
 
-flash: main.bin
-	st-flash write main.bin 0x08000000
+flash: $(BIN)
+	st-flash write $(BIN) 0x08000000
 
 .PHONY: all clean flash

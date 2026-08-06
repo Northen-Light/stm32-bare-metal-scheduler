@@ -2,7 +2,4 @@
 .vscode
 **/.idea
 **/.gdb_history
-*.elf
-*.map
-*.o
-*.bin
+build/
